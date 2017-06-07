@@ -12,58 +12,175 @@
 
 #include "wolf.h"
 
-void 	ft_move(t_move *move, t_wolf *w, int keycode)
+void	move_forward(t_wolf *w)
 {
+	if (!w->pl.map[(int)(w->pl.posx + w->pl.dirx * w->pl.movespeed)][(int)(w->pl.posy)])
+		w->pl.posx += w->pl.dirx * w->pl.movespeed;
+	if (!w->pl.map[(int)(w->pl.posx)][(int)(w->pl.posy + w->pl.diry * w->pl.movespeed)])
+		w->pl.posy += w->pl.diry * w->pl.movespeed;
+}
 
-//	int posx;
-//	int posy;
-	if (SDLK_UP)
-	{
-		if(w->pl.map[int((w->pl.posx + w->pl.dirx) * w->pl.movespeed)][w->pl.posy] == 0)
-			w->pl.posx += w->pl.dirx * w->pl.movespeed;
-		if(w->pl.map[w->pl.posx][w->pl.posy + w->pl.diry * w->pl.movespeed] == 0)
-			w->pl.posy += w->pl.diry * w->pl.movespeed;
-	}
-//move backwards if no wall behind you
-	if (SDLK_DOWN)
-	{
-		if(w->pl.map[w->pl.posx - w->pl.dirx * w->pl.movespeed][w->pl.posy] == 0)
-			w->pl.posx -= w->pl.dirx * w->pl.movespeed;
-		if(w->pl.map[w->pl.posx][w->pl.posy - w->pl.diry * w->pl.movespeed] == 0)
-			w->pl.posy -= w->pl.diry * w->pl.movespeed;
-	}
-//rotate to the right
-	 if (SDLK_RIGHT)
-	{
-//both camera direction and camera plane must be rotated
-///double oldDirX = dirx;
+void	move_back(t_wolf *w)
+{
+	if (!w->pl.map[(int)(w->pl.posx - w->pl.dirx * w->pl.movespeed)][(int)(w->pl.posy)])
+		w->pl.posx -= w->pl.dirx * w->pl.movespeed;
+	if (!w->pl.map[(int)(w->pl.posx)][(int)(w->pl.posy - w->pl.diry * w->pl.movespeed)])
+		w->pl.posy -= w->pl.diry * w->pl.movespeed;
+}
 
+void	turn_left(t_wolf *w)
+{
 	w->pl.olddirx = w->pl.dirx;
-	w->pl.dirx = w->pl.dirx * cos(-w->pl.rotspeed) - w->pl.diry * sin(-w->pl.rotspeed);
-	w->pl.diry = w->pl.olddirx * sin(-w->pl.rotspeed) + w->pl.dirx * cos(-w->pl.rotspeed);
-///double oldPlaneX = planeX;
+	w->pl.dirx = w->pl.dirx * cos(0.05) - w->pl.diry * sin(0.05);
+	w->pl.diry = w->pl.olddirx * sin(0.05) + w->pl.diry * cos(0.05);
 	w->pl.oldplanex = w->pl.planex;
-	w->pl.planex = w->pl.planex * cos(-w->pl.rotspeed) - w->pl.planey * sin(-w->pl.rotspeed);
-	w->pl.planey = w->pl.oldplanex * sin(-w->pl.rotspeed) + w->pl.planey * cos(-w->pl.rotspeed);
-	}
-//rotate to the left
-	if (SDLK_LEFT)
-	{
-//both camera direction and camera plane must be rotated
+	w->pl.planex = w->pl.planex * cos(0.05) - w->pl.planey * sin(0.05);
+	w->pl.planey = w->pl.oldplanex * sin(0.05) + w->pl.planey * cos(0.05);
+}
+
+void	turn_right(t_wolf *w)
+{
 	w->pl.olddirx = w->pl.dirx;
-	w->pl.dirx = w->pl.dirx * cos(w->pl.rotspeed) - w->pl.diry * sin(w->pl.rotspeed);
-	w->pl.diry = w->pl.olddirx * sin(w->pl.rotspeed) + w->pl.diry * cos(w->pl.rotspeed);
+	w->pl.dirx = w->pl.dirx * cos(-0.05) - w->pl.diry * sin(-0.05);
+	w->pl.diry = w->pl.olddirx * sin(-0.05) + w->pl.diry * cos(-0.05);
 	w->pl.oldplanex = w->pl.planex;
-	w->pl.planex = w->pl.planex * cos(w->pl.rotspeed) - w->pl.planey * sin(w->pl.rotspeed);
-	w->pl.planey = w->pl.oldplanex * sin(w->pl.rotspeed) + w->pl.planey * cos(w->pl.rotspeed);
-	}
+	w->pl.planex = w->pl.planex * cos(-0.05) - w->pl.planey * sin(-0.05);
+	w->pl.planey = w->pl.oldplanex * sin(-0.05) + w->pl.planey * cos(-0.05);
 }
 
 int		my_key(int keycode, t_wolf *w)
 {
 	(keycode == 53) ? exit(53) : 0;
-	(keycode == 123 || keycode == 124 ||
-	 keycode == 125 || keycode == 126) ? ft_move(&w->move, w, keycode) : 0;
-	printf("%d\n", keycode);
+	(keycode == 123) ? turn_left(w) : 0;
+	(keycode == 124) ? turn_right(w) : 0;
+	(keycode == 125) ? move_back(w) : 0;
+	(keycode == 126) ? move_forward(w) : 0;
+	if (keycode == 69)
+		w->pl.sm += 0.2;
+	if (keycode == 78)
+		w->pl.sm -= 0.2;
+	printf("keycode == %d\n", keycode);
 	return (0);
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*
+void	move_forward(t_player *pl, int **map)
+{
+	if (!map[(int)(pl->player_x + pl->dir_x * pl->speed)][(int)(pl->player_y)])
+		pl->player_x += pl->dir_x * pl->speed;
+	if (!map[(int)(pl->player_x)][(int)(pl->player_y + pl->dir_y * pl->speed)])
+		pl->player_y += pl->dir_y * pl->speed;
+}
+
+void	move_back(t_player *pl, int **map)
+{
+	if (!map[(int)(pl->player_x - pl->dir_x * pl->speed)][(int)(pl->player_y)])
+		pl->player_x -= pl->dir_x * pl->speed;
+	if (!map[(int)(pl->player_x)][(int)(pl->player_y - pl->dir_y * pl->speed)])
+		pl->player_y -= pl->dir_y * pl->speed;
+}
+
+void	turn_left(t_player *pl)
+{
+	pl->old_dir_x = pl->dir_x;
+	pl->dir_x = pl->dir_x * cos(0.05) - pl->dir_y * sin(0.05);
+	pl->dir_y = pl->old_dir_x * sin(0.05) + pl->dir_y * cos(0.05);
+	pl->old_plane_x = pl->plane_x;
+	pl->plane_x = pl->plane_x * cos(0.05) - pl->plane_y * sin(0.05);
+	pl->plane_y = pl->old_plane_x * sin(0.05) + pl->plane_y * cos(0.05);
+}
+
+void	turn_right(t_player *pl)
+{
+	pl->old_dir_x = pl->dir_x;
+	pl->dir_x = pl->dir_x * cos(-0.05) - pl->dir_y * sin(-0.05);
+	pl->dir_y = pl->old_dir_x * sin(-0.05) + pl->dir_y * cos(-0.05);
+	pl->old_plane_x = pl->plane_x;
+	pl->plane_x = pl->plane_x * cos(-0.05) - pl->plane_y * sin(-0.05);
+	pl->plane_y = pl->old_plane_x * sin(-0.05) + pl->plane_y * cos(-0.05);
+}void	move_forward(t_player *pl, int **map)
+{
+	if (!map[(int)(pl->player_x + pl->dir_x * pl->speed)][(int)(pl->player_y)])
+		pl->player_x += pl->dir_x * pl->speed;
+	if (!map[(int)(pl->player_x)][(int)(pl->player_y + pl->dir_y * pl->speed)])
+		pl->player_y += pl->dir_y * pl->speed;
+}
+
+void	move_back(t_player *pl, int **map)
+{
+	if (!map[(int)(pl->player_x - pl->dir_x * pl->speed)][(int)(pl->player_y)])
+		pl->player_x -= pl->dir_x * pl->speed;
+	if (!map[(int)(pl->player_x)][(int)(pl->player_y - pl->dir_y * pl->speed)])
+		pl->player_y -= pl->dir_y * pl->speed;
+}
+
+void	turn_left(t_player *pl)
+{
+	pl->old_dir_x = pl->dir_x;
+	pl->dir_x = pl->dir_x * cos(0.05) - pl->dir_y * sin(0.05);
+	pl->dir_y = pl->old_dir_x * sin(0.05) + pl->dir_y * cos(0.05);
+	pl->old_plane_x = pl->plane_x;
+	pl->plane_x = pl->plane_x * cos(0.05) - pl->plane_y * sin(0.05);
+	pl->plane_y = pl->old_plane_x * sin(0.05) + pl->plane_y * cos(0.05);
+}
+
+void	turn_right(t_player *pl)
+{
+	pl->old_dir_x = pl->dir_x;
+	pl->dir_x = pl->dir_x * cos(-0.05) - pl->dir_y * sin(-0.05);
+	pl->dir_y = pl->old_dir_x * sin(-0.05) + pl->dir_y * cos(-0.05);
+	pl->old_plane_x = pl->plane_x;
+	pl->plane_x = pl->plane_x * cos(-0.05) - pl->plane_y * sin(-0.05);
+	pl->plane_y = pl->old_plane_x * sin(-0.05) + pl->plane_y * cos(-0.05);
+}void	move_forward(t_player *pl, int **map)
+{
+	if (!map[(int)(pl->player_x + pl->dir_x * pl->speed)][(int)(pl->player_y)])
+		pl->player_x += pl->dir_x * pl->speed;
+	if (!map[(int)(pl->player_x)][(int)(pl->player_y + pl->dir_y * pl->speed)])
+		pl->player_y += pl->dir_y * pl->speed;
+}
+
+void	move_back(t_player *pl, int **map)
+{
+	if (!map[(int)(pl->player_x - pl->dir_x * pl->speed)][(int)(pl->player_y)])
+		pl->player_x -= pl->dir_x * pl->speed;
+	if (!map[(int)(pl->player_x)][(int)(pl->player_y - pl->dir_y * pl->speed)])
+		pl->player_y -= pl->dir_y * pl->speed;
+}
+
+void	turn_left(t_player *pl)
+{
+	pl->old_dir_x = pl->dir_x;
+	pl->dir_x = pl->dir_x * cos(0.05) - pl->dir_y * sin(0.05);
+	pl->dir_y = pl->old_dir_x * sin(0.05) + pl->dir_y * cos(0.05);
+	pl->old_plane_x = pl->plane_x;
+	pl->plane_x = pl->plane_x * cos(0.05) - pl->plane_y * sin(0.05);
+	pl->plane_y = pl->old_plane_x * sin(0.05) + pl->plane_y * cos(0.05);
+}
+
+void	turn_right(t_player *pl)
+{
+	pl->old_dir_x = pl->dir_x;
+	pl->dir_x = pl->dir_x * cos(-0.05) - pl->dir_y * sin(-0.05);
+	pl->dir_y = pl->old_dir_x * sin(-0.05) + pl->dir_y * cos(-0.05);
+	pl->old_plane_x = pl->plane_x;
+	pl->plane_x = pl->plane_x * cos(-0.05) - pl->plane_y * sin(-0.05);
+	pl->plane_y = pl->old_plane_x * sin(-0.05) + pl->plane_y * cos(-0.05);
+}
+ *//////
